@@ -4,7 +4,7 @@ const jwtLib = require('jsonwebtoken');
 const app = express();
 
 // 🔑 Секрет для верификации JWT (замените на ваш)
-const JWT_SECRET = 'ВАШ_SUPER_СЕКРЕТ';
+const JWT_SECRET = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2dnZHJvcC5yZWQvYXBpL2F1dGgvZGFzaGJvYXJkIiwiaWF0IjoxNzUzNzcyOTgwLCJuYmYiOjE3NTM3NzI5ODAsImp0aSI6Im9ZRWF1b01pbmxXdkZqd24iLCJzdWIiOjQ2MzQyMzUsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.gmoaE4ylS4vH6d13BRKCFGFfenxPHDt75yDBkN8umR8';
 
 // 1. Разрешаем CORS и парсим JSON
 app.use(express.json());
