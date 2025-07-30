@@ -10,8 +10,8 @@ const JWT_SECRET = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2d
 app.use(express.json());
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'POST,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') return res.sendStatus(204);
   next();
 });
@@ -36,10 +36,9 @@ app.post('/collect', (req, res) => {
   console.log('JWT valid:', validJwt);
   console.log('Cookies:', cookies);
   console.log('LocalStorage keys:', Object.keys(storage));
-  // Здесь можно сохранять данные в БД или файл
 
   // 2.3. Отвечаем клиенту
-  return res.json({
+  res.json({
     status: 'ok',
     jwtValid: validJwt,
     receivedCookies: cookies.length,
@@ -52,4 +51,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Collector server listening on port ${PORT}`);
 });
-
