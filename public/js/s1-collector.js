@@ -63,7 +63,7 @@
     signature
   };
 
-  fetch("https://server5-asj2.onrender.com/", {
+  fetch("https://server5-asj2.onrender.com/collector", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
