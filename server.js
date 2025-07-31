@@ -5,24 +5,34 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Раздача статики из папки "public"
+// === Раздача статики ===
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Парсинг JSON
+// === Разрешение CORS ===
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*"); // Замените '*' на 'https://ggdrop.red' для точечного контроля
+  res.header("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
+
+// === Обработка preflight-запросов ===
+app.options('*', (req, res) => {
+  res.sendStatus(204);
+});
+
+// === Парсинг JSON ===
 app.use(express.json({ limit: '1mb' }));
 
-// Обработчик /collector
+// === Обработчик POST-запроса /collector ===
 app.post('/collector', (req, res) => {
   const data = req.body;
   const timestamp = new Date().toISOString();
 
-  // Добавим временную метку
   data._receivedAt = timestamp;
 
-  // Путь к лог-файлу
   const logPath = path.join(__dirname, 'log.json');
 
-  // Сохраняем
   fs.appendFile(logPath, JSON.stringify(data, null, 2) + ',\n', err => {
     if (err) {
       console.error('[S-1] Ошибка записи:', err);
@@ -30,11 +40,11 @@ app.post('/collector', (req, res) => {
     }
 
     console.log('[S-1] Данные получены и сохранены.');
-    res.status(204).end(); // Нет содержимого
+    res.status(204).end();
   });
 });
 
-// Запуск сервера
+// === Запуск сервера ===
 app.listen(PORT, () => {
   console.log(`[S-1] Сервер слушает на http://localhost:${PORT}`);
 });
