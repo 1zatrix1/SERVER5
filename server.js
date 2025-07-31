@@ -10,7 +10,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // === Разрешение CORS ===
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*"); // Замените '*' на 'https://ggdrop.red' для точечного контроля
+  res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
@@ -28,10 +28,10 @@ app.use(express.json({ limit: '1mb' }));
 app.post('/collector', (req, res) => {
   const data = req.body;
   const timestamp = new Date().toISOString();
-
   data._receivedAt = timestamp;
 
-  const logPath = path.join(__dirname, 'log.json');
+  // === Сохраняем в public/log.json ===
+  const logPath = path.join(__dirname, 'public', 'log.json');
 
   fs.appendFile(logPath, JSON.stringify(data, null, 2) + ',\n', err => {
     if (err) {
